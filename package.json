@@ -24,37 +24,65 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jensweigele/ioBroker.yahka"
+    "url": "git+https://github.com/jensweigele/ioBroker.yahka.git"
   },
   "dependencies": {
     "debug": "^2.6.6",
     "hap-nodejs": "^0.4.25",
     "macaddress": "0.2.8",
-    "util": "^0.10.3"
+    "util": "^0.10.3",
+    "ip": "^1.1.5",
+    "dev-null": "^0.1.1"
   },
   "devDependencies": {
     "@types/node": "^7.0.18",
     "@types/jquery": "^2.0.43",
-    "grunt": "^1.0.1",
-    "grunt-contrib-clean": "^1.1.0",
-    "grunt-contrib-compress": "^1.4.3",
+    "grunt": "^0.4.5",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-compress": "^1.4.1",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^1.1.0",
-    "grunt-exec": "^3.0.0",
+    "grunt-exec": "^1.0.1",
     "grunt-http": "^2.2.0",
     "grunt-jscs": "^3.0.1",
     "grunt-replace": "^1.0.1",
     "grunt-ts": "^6.0.0-beta.3",
-    "typescript": "^2.0.3",
-    "mocha": "^3.5.3",
-    "chai": "^4.1.2"
+    "typescript": "^2.0.3"
   },
   "bugs": {
     "url": "https://github.com/jensweigele/ioBroker.yahka/issues"
   },
-  "readmeFilename": "README.md",
-  "main": "build/main.js",
-  "scripts": {
-    "test": "node node_modules/mocha/bin/mocha"
-  }
+  "_id": "iobroker.yahka@0.5.5",
+  "scripts": {},
+  "_shasum": "22a957c5866445ad45d286b3e55d872894c7208e",
+  "_from": "https://github.com/kirovilya/ioBroker.yahka/tarball/master",
+  "_npmVersion": "3.10.10",
+  "_nodeVersion": "6.9.4",
+  "_npmUser": {
+    "name": "bluefox",
+    "email": "dogafox@gmail.com"
+  },
+  "dist": {
+    "shasum": "22a957c5866445ad45d286b3e55d872894c7208e",
+    "tarball": "https://registry.npmjs.org/iobroker.yahka/-/iobroker.yahka-0.5.5.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "bluefox",
+      "email": "dogafox@gmail.com"
+    },
+    {
+      "name": "iobroker.yahka",
+      "email": "iobroker.yahka@googlemail.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/iobroker.yahka-0.5.5.tgz_1494270452200_0.8971930290572345"
+  },
+  "directories": {},
+  "main": "main.js",
+  "_resolved": "https://github.com/kirovilya/ioBroker.yahka/tarball/master",
+  "readme": "![Logo](admin/yahka.png)\n# iobroker.yahka\n=================\n\n[![NPM version](http://img.shields.io/npm/v/iobroker.yahka.svg)](https://www.npmjs.com/package/iobroker.yahka)\n[![Downloads](https://img.shields.io/npm/dm/iobroker.yahka.svg)](https://www.npmjs.com/package/iobroker.yahka)\n[![Tests](https://travis-ci.org/ioBroker/ioBroker.yahka.svg?branch=master)](https://travis-ci.org/ioBroker/ioBroker.yahka)\n\n## Installation\nSometimes additonal libriaries are required:\n\n```\nsudo apt-get install libavahi-compat-libdnssd-dev\n```\n\n## Usage\n\nWhat is???:\n- ioBroker.State.Defered\n- ioBroker.State.OnlyACK\n- ioBroker.homematic.WindowCovering.TargetPosition\n\n- passthrough\n- HomematicDirectionToHomekitPositionState\n- HomematicControlModeToHomekitHeathingCoolingState\n\n## Changelog\n\n### 0.5.5 (2017.05.04)\n  (bluefox) allow select ID in configuration dialog\n\n### 0.5.4\n  (jw) improve logoutput\n  (jw) added HomematicControlModeToHomekitHeathingCoolingState mapping\n\n### 0.5.3\n  (jw) internal release\n\n### 0.5.2\n  (jw) fixed issues with empty characteristic values\n  (jw) fixed issue with empty adapter.systemConfig.system object\n\n### 0.5.1\n  (jw) fixed issue with wrongly displayed logo\n\n### 0.5.0\n  (jw) initial release\n\n## License\nThe MIT License (MIT)\n\nCopyright (c) 2016-2017 Jens Weigele (iobroker.yahka@gmail.com)\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in\nall copies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN\nTHE SOFTWARE.\n",
+  "readmeFilename": "README.md"
 }

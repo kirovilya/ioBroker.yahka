@@ -9,11 +9,10 @@
                 "ru": "Увеличен размер окна настроек"
             }
         },
-        "title": "Homekit yahka adapter",
+        "title": "Javascript/Node.js based yahka adapter",
         "desc": {
             "en": "ioBroker yet another homekit adapter",
-            "de": "ioBroker yet another homekit adapter",
-            "ru": "ioBroker Homekit адаптер"
+            "de": "ioBroker yet another homekit adapter"
         },
         "platform": "Javascript/Node.js",
         "mode": "daemon",
@@ -220,6 +219,31 @@
                         },
                         "Name": {
                             "name": "Name",
+                            "optional": true
+                        }
+                    }
+                },
+                "Camera": {
+                	"type": "Camera",
+                	"characteristics": {
+                        "source": {
+                            "name": "source",
+                            "optional": false
+                        },
+                        "maxStreams": {
+                            "name": "maxStreams",
+                            "optional": true
+                        },
+                        "maxWidth": {
+                            "name": "maxWidth",
+                            "optional": true
+                        },
+                        "maxHeight": {
+                            "name": "maxHeight",
+                            "optional": true
+                        },
+                        "maxFPS": {
+                            "name": "maxFPS",
                             "optional": true
                         }
                     }

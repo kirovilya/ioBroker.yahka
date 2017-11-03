@@ -21,7 +21,7 @@ systemDictionary = {
     "Add Device":           {"en": "Add Device",            "de": "Gerät hinzufügen",       "ru": "Добавить устройство"},
     "Remove Device":        {"en": "Remove Device",         "de": "Gerät entfernen",        "ru": "Удалить устройство"},
     "Add Service":          {"en": "Add Service",           "de": "Service hinzufügen",     "ru": "Добавить сервис"},
-    "Device Properties":    {"en": "Device Properties",     "de": "Geräteeigenschaften",    "ru": "Device Properties"},
+    "Device Properties":    {"en": "Device Properties",     "de": "Geräteeigenschaften",    "ru": "Свойства устройства"},
     "Device name:":         {"en": "Device name:",          "de": "Gerätename:",            "ru": "Имя устройства:"},
     "Categeory:":           {"en": "Categeory:",            "de": "Kategorie:",             "ru": "Категория:"},
     "Service: ":            {"en": "Service: ",             "de": "Bedienung: ",            "ru": "Обслуживание: "},
