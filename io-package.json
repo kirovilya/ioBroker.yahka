@@ -226,6 +226,10 @@
                 "Camera": {
                 	"type": "Camera",
                 	"characteristics": {
+                        "codec": {
+                            "name": "codec",
+                            "optional": true
+                        },
                         "source": {
                             "name": "source",
                             "optional": false

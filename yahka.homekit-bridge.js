@@ -2,7 +2,6 @@
 var debug = require("debug");
 var util = require("util");
 var HAP = require("hap-nodejs");
-var Camera = require('hap-nodejs/lib/Camera').Camera;
 var FFMPEG = require('./ffmpeg').FFMPEG;
 exports.HAPService = HAP.Service;
 exports.HAPCharacteristic = HAP.Characteristic;
@@ -11,6 +10,8 @@ var THomeKitBridge = (function () {
         this.config = config;
         this.FBridgeFactory = FBridgeFactory;
         this.FLogger = FLogger;
+        // need to count cameras for different username
+        this.cameraCount = 0;
         this.init();
     }
     THomeKitBridge.prototype.init = function () {
@@ -22,15 +23,15 @@ var THomeKitBridge = (function () {
                     continue;
                 }
                 this.FLogger.info("init Device " + JSON.stringify(device));
-                var hapDevice = this.createDevice(device, _i);
+                var hapDevice = this.createDevice(device);
                 if (hapDevice) {
-                try {
-                    this.bridgeObject.addBridgedAccessory(hapDevice);
-                }
-                catch (e) {
-                    this.FLogger.warn(e);
-                    this.FLogger.warn('Error by adding: ' + JSON.stringify(device));
-                }
+                    try {
+                        this.bridgeObject.addBridgedAccessory(hapDevice);
+                    }
+                    catch (e) {
+                        this.FLogger.warn(e);
+                        this.FLogger.warn('Error by adding: ' + JSON.stringify(device));
+                    }
                 }
             }
         this.bridgeObject.publish({
@@ -53,7 +54,7 @@ var THomeKitBridge = (function () {
         });
         return hapBridge;
     };
-    THomeKitBridge.prototype.createDevice = function (device, ind) {
+    THomeKitBridge.prototype.createDevice = function (device) {
         var _this = this;
         var deviceID = HAP.uuid.generate(this.config.ident + ':' + device.name);
         var hapDevice = new HAP.Accessory(device.name, deviceID);
@@ -68,15 +69,16 @@ var THomeKitBridge = (function () {
         _this.FLogger.info("create Device " + device.category);
         for (var _i = 0, _a = device.services; _i < _a.length; _i++) {
             var serviceConfig = _a[_i];
-            this.initService(hapDevice, serviceConfig, ind);
+            this.initService(hapDevice, serviceConfig);
         }
+        // if it's Camera - not return device
         if (device.category == 17) {
             return;
         } else {
             return hapDevice;
         }
     };
-    THomeKitBridge.prototype.initCamera = function (hapDevice, deviceConfig, ind) {
+    THomeKitBridge.prototype.initCamera = function (hapDevice, deviceConfig) {
         var _this = this;
         var cameraConfig = {
             //"source": "-re -i rtsp://184.72.239.149/vod/mp4:BigBuckBunny_175k.mov",
@@ -88,8 +90,9 @@ var THomeKitBridge = (function () {
         };
         for (var _i = 0, _a = deviceConfig.characteristics; _i < _a.length; _i++) {
             var charactConfig = _a[_i];
-            //this.initCharacteristic(cameraConfig, charactConfig);
-            cameraConfig[charactConfig.name] = charactConfig.inOutParameters;
+            if (charactConfig.enabled) {
+            	cameraConfig[charactConfig.name] = charactConfig.inOutParameters;
+            }
             _this.FLogger.info(JSON.stringify(charactConfig));
         }
         _this.FLogger.info("Camera Config: " + JSON.stringify(cameraConfig));
@@ -101,19 +104,19 @@ var THomeKitBridge = (function () {
         //});
         // Publish the camera on the local network.
         var publishData = {
-            //username: _this.config.username + ind,
-            username: 'EC:22:3D:D3:CE:' + ('00'+ind.toString(16)).substr(-2),
+            username: this.config.username.substr(0,15) + ('00'+_this.cameraCount.toString(16)).substr(-2),
             port: _this.config.port,
             pincode: _this.config.pincode,
             category: 17
         };
+        _this.cameraCount += 1;
         _this.FLogger.info("Publish Camera: '" + hapDevice.displayName + "'" + JSON.stringify(publishData));
         hapDevice.publish(publishData, true);
     };
-    THomeKitBridge.prototype.initService = function (hapDevice, serviceConfig, ind) {
+    THomeKitBridge.prototype.initService = function (hapDevice, serviceConfig) {
         if (!(serviceConfig.type in HAP.Service)) {
             if (serviceConfig.type == 'Camera') {
-            	this.initCamera(hapDevice, serviceConfig, ind);
+            	this.initCamera(hapDevice, serviceConfig);
             	return;
             } else
             	throw Error('unknown service type: ' + serviceConfig.type);

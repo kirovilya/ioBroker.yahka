@@ -20,6 +20,7 @@ function FFMPEG(bridge, ffmpegOpt) {
   this.bridge = bridge;
 
   this.ffmpegSource = ffmpegOpt.source;
+  this.ffmpegCodec = ffmpegOpt.codec;
 
   this.services = [];
   this.streamControllers = [];
@@ -30,19 +31,19 @@ function FFMPEG(bridge, ffmpegOpt) {
   var numberOfStreams = ffmpegOpt.maxStreams || 2;
   var videoResolutions = [];
   
-  var maxWidth = ffmpegOpt.maxWidth;
-  var maxHeight = ffmpegOpt.maxHeight;
+  this.maxWidth = ffmpegOpt.maxWidth;
+  this.maxHeight = ffmpegOpt.maxHeight;
   var maxFPS = (ffmpegOpt.maxFPS > 30) ? 30 : ffmpegOpt.maxFPS;
 
-  if (maxWidth <= 320) {
-    if (maxHeight <= 240) {
+  if (this.maxWidth >= 320) {
+    if (this.maxHeight >= 240) {
       videoResolutions.push([320, 240, maxFPS]);
       if (maxFPS > 15) {
         videoResolutions.push([320, 240, 15]);
       }
     }
 
-    if (maxHeight <= 180) {
+    if (this.maxHeight >= 180) {
       videoResolutions.push([320, 180, maxFPS]);
       if (maxFPS > 15) {
         videoResolutions.push([320, 180, 15]);
@@ -50,38 +51,38 @@ function FFMPEG(bridge, ffmpegOpt) {
     }
   }
 
-  if (maxWidth <= 480) {
-    if (maxHeight <= 360) {
+  if (this.maxWidth >= 480) {
+    if (this.maxHeight >= 360) {
       videoResolutions.push([480, 360, maxFPS]);
     }
 
-    if (maxHeight <= 270) {
+    if (this.maxHeight >= 270) {
       videoResolutions.push([480, 270, maxFPS]);
     }
   }
 
-  if (maxWidth <= 640) {
-    if (maxHeight <= 480) {
+  if (this.maxWidth >= 640) {
+    if (this.maxHeight >= 480) {
       videoResolutions.push([640, 480, maxFPS]);
     }
 
-    if (maxHeight <= 360) {
+    if (this.maxHeight >= 360) {
       videoResolutions.push([640, 360, maxFPS]);
     }
   }
 
-  if (maxWidth <= 1280) {
-    if (maxHeight <= 960) {
+  if (this.maxWidth >= 1280) {
+    if (this.maxHeight >= 960) {
       videoResolutions.push([1280, 960, maxFPS]);
     }
 
-    if (maxHeight <= 720) {
+    if (this.maxHeight >= 720) {
       videoResolutions.push([1280, 720, maxFPS]);
     }
   }
 
-  if (maxWidth <= 1920) {
-    if (maxHeight <= 1080) {
+  if (this.maxWidth >= 1920) {
+    if (this.maxHeight >= 1080) {
       videoResolutions.push([1920, 1080, maxFPS]);
     }
   }
@@ -109,7 +110,7 @@ function FFMPEG(bridge, ffmpegOpt) {
       ]
     }
   }
-
+  this.bridge.FLogger.info("Camera options: " + JSON.stringify(options));
   this.createCameraControlService();
   this._createStreamControllers(numberOfStreams, options); 
 }
@@ -121,8 +122,11 @@ FFMPEG.prototype.handleCloseConnection = function(connectionID) {
 }
 
 FFMPEG.prototype.handleSnapshotRequest = function(request, callback) {
+  this.bridge.FLogger.info("get snapshot");
   let resolution = request.width + 'x' + request.height;
-  let ffmpeg = spawn('ffmpeg', (this.ffmpegSource + ' -t 1 -s '+ resolution + ' -f image2 -').split(' '), {env: process.env});
+  let ffmpegCommand = '-re -i ' + this.ffmpegSource + ' -t 1 -s '+ resolution + ' -f image2 -';
+  this.bridge.FLogger.info("Snapshot run: ffmpeg " + ffmpegCommand);
+  let ffmpeg = spawn('ffmpeg', (ffmpegCommand).split(' '), {env: process.env});
   var imageBuffer = Buffer(0);
 
   ffmpeg.stdout.on('data', function(data) {
@@ -201,6 +205,7 @@ FFMPEG.prototype.prepareStream = function(request, callback) {
 }
 
 FFMPEG.prototype.handleStreamRequest = function(request) {
+  this.bridge.FLogger.info("StreamRequest");
   var sessionID = request["sessionID"];
   var requestType = request["type"];
   if (sessionID) {
@@ -211,10 +216,9 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
       if (sessionInfo) {
         var width = 1280;
         var height = 720;
-        var width = 640;
-        var height = 480;
-        var fps = 25;
+        var fps = 30;
         var bitrate = 300;
+        var codec = this.ffmpegCodec || 'libx264';
 
         let videoInfo = request["video"];
         if (videoInfo) {
@@ -232,11 +236,9 @@ FFMPEG.prototype.handleStreamRequest = function(request) {
         let targetAddress = sessionInfo["address"];
         let targetVideoPort = sessionInfo["video_port"];
         let videoKey = sessionInfo["video_srtp"];
-
-        //let ffmpegCommand = '-re -i ' + this.ffmpegSource + ' -threads 0 -vcodec h264_omx -an -pix_fmt yuv420p -r '+ 25 +' -f rawvideo -vf scale='+ 640 +':'+ 360 +' -b:v '+ 256 +'k -bufsize '+ 256 +'k -payload_type 99 -ssrc 1 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params '+videoKey.toString('base64')+' srtp://'+targetAddress+':'+targetVideoPort+'?rtcpport='+targetVideoPort+'&localrtcpport='+targetVideoPort+'&pkt_size=1378';
-        let ffmpegCommand = '-re -i ' + this.ffmpegSource + ' -threads 0 -vcodec h264_omx -an -pix_fmt yuv420p -r '+fps +' -f rawvideo -vf scale='+ width +':'+ height +' -b:v '+ bitrate +'k -bufsize '+ bitrate +'k -payload_type 99 -ssrc 1 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params '+videoKey.toString('base64')+' srtp://'+targetAddress+':'+targetVideoPort+'?rtcpport='+targetVideoPort+'&localrtcpport='+targetVideoPort+'&pkt_size=1378';
-        //let ffmpegCommand = '-re -f avfoundation -r 29.970000 -i 0:0 -threads 0 -vcodec libx264 -an -pix_fmt yuv420p -r '+ fps +' -f rawvideo -tune zerolatency -vf scale='+ width +':'+ height +' -b:v '+ bitrate +'k -bufsize '+ bitrate +'k -payload_type 99 -ssrc 1 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params '+videoKey.toString('base64')+' srtp://'+targetAddress+':'+targetVideoPort+'?rtcpport='+targetVideoPort+'&localrtcpport='+targetVideoPort+'&pkt_size=1378';
-        this.bridge.FLogger.info("run: ffmpeg " + ffmpegCommand);
+        
+        let ffmpegCommand = '-re -i ' + this.ffmpegSource + ' -threads 0 -vcodec ' + codec + ' -an -pix_fmt yuv420p -r '+fps +' -f rawvideo -tune zerolatency -vf scale='+ width +':'+ height +' -b:v '+ bitrate +'k -bufsize '+ bitrate +'k -payload_type 99 -ssrc 1 -f rtp -srtp_out_suite AES_CM_128_HMAC_SHA1_80 -srtp_out_params '+videoKey.toString('base64')+' srtp://'+targetAddress+':'+targetVideoPort+'?rtcpport='+targetVideoPort+'&localrtcpport='+targetVideoPort+'&pkt_size=1378';
+        this.bridge.FLogger.info("Stream run: ffmpeg " + ffmpegCommand);
         let ffmpeg = spawn('ffmpeg', ffmpegCommand.split(' '), {env: process.env});
         var devnull = require('dev-null');
         ffmpeg.stdout.pipe(devnull());
