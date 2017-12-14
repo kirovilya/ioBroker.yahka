@@ -130,6 +130,10 @@ var THomeKitBridge = (function () {
             hapService = new HAP.Service[serviceConfig.type](serviceConfig.name, serviceConfig.subType);
             isNew = true;
         }
+        // fix negative temperature issue
+        if (serviceConfig.type == 'TemperatureSensor') {
+            hapService.getCharacteristic(exports.HAPCharacteristic.CurrentTemperature).setProps({ minValue: -50 });
+        }
         for (var _i = 0, _a = serviceConfig.characteristics; _i < _a.length; _i++) {
             var charactConfig = _a[_i];
             this.initCharacteristic(hapService, charactConfig);
