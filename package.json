@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "debug": "^2.6.6",
-    "hap-nodejs": "^0.4.25",
+    "hap-nodejs": "^0.4.36",
     "macaddress": "0.2.8",
     "util": "^0.10.3",
     "ip": "^1.1.5",
